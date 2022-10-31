@@ -457,3 +457,10 @@ nav {
 	border: 1px solid blue;
 	padding: 5px;
 }
+
+.connect-button {
+	grid-row-start: 1;
+	grid-column-start: 3;
+	border: 1px solid blue;
+	padding: 5px;
+}

@@ -1,0 +1,29 @@
+2022-10-31
+
+Team 1
+1. Adaugat dropdown pe randul 2, coloana 2 
+2. Adaugat buton pe randul 2, coloana 3
+
+Team 2
+1. Adaugat canvas pe randul 3, coloana 2 pana la coloana 11 (inclusiv)
+
+Team 3
+1. Adaugat buton pe randul 4, coloana 2
+2. Adaugat buton pe randul 4, coloana 10
+3. Adaugat buton pe randul 4, coloana 11
+
+Hints:
+- folositi Grid 
+- inainte de a adauga ceva, creati containerul in care sa creati gridul. 
+- pozitionati elementele folosind urmatoarele proprietati CSS (in grid)
+-- grid-column-start
+-- grid-column-end
+-- grid-row-start
+-- grid-row-end
+-- grid-template-columns 
+-- grid-template-rows 
+- Exemplu HTML Canvas (Team 2)
+-- 
+<canvas width="200" height="100" style="border:1px solid #000000;">
+</canvas>
+-- 

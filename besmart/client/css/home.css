@@ -465,3 +465,18 @@ main {
         pointer-events: none;
     }
 }
+
+.main-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr;
+	border: 1px solid green;
+	padding: 10px;
+}
+
+.add-equipment-button {
+	grid-row-start: 1;
+	grid-column-start: 2;
+	border: 1px solid blue;
+	padding: 5px;
+}

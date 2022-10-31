@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="author"
+			content="Group 610"
+		/>
+		<title>BeSmart - 610 Class Project</title>
+		<link
+			rel="stylesheet"
+			href="./css/home.css"
+		/>
+		<meta
+			name="description"
+			content="Learning platform"
+		/>
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<meta
+			name="keywords"
+			content="Learn, Platform, Group, Class, Project, 610"
+		/>
+	</head>
+	<body>
+		<header>
+			<nav>
+				<div
+					id="slidermenu"
+					class="slidermenu__wrapper"
+				>
+					<div
+						id="menuwrapper"
+						class="menu__wrapper"
+					>
+						<div class="menu__content-wrapper">
+							<button
+								class="menu__backbtn"
+								title="Close the panel"
+								onclick="close_navigation()"
+							>
+								❮
+							</button>
+							<span>Navigation menu</span>
+						</div>
+						<hr />
+						<ol class="menu__links">
+							<li><a href="">Link 1</a></li>
+							<li><a href="">Link 2</a></li>
+							<li><a href="">Link 3</a></li>
+							<li><a href="">Link 4</a></li>
+							<li><a href="">Link 5</a></li>
+						</ol>
+					</div>
+				</div>
+				<div class="navbar__wrapper">
+					<div
+						class="menuburger__wrapper"
+						onclick="open_navigation()"
+					>
+						<button
+							id="menuburger"
+							class="menuburger__btn"
+							title="Toggle side menu"
+							onclick="this.classList.toggle('burger-opened');"
+						>
+							<svg
+								class="menuburger__img"
+								viewBox="0 0 100 100"
+							>
+								<path
+									class="line line1"
+									d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058"
+								/>
+								<path
+									class="line line2"
+									d="M 20,50 H 80"
+								/>
+								<path
+									class="line line3"
+									d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942"
+								/>
+							</svg>
+						</button>
+					</div>
+					<div class="searchbox__wrapper">
+						<svg
+							class="searchbox__img"
+							viewBox="0 0 512 512"
+						>
+							<path
+								title="Search content"
+								d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"
+							/>
+						</svg>
+						<input
+							type="text"
+							class="searchbox__input"
+							placeholder="What you wanna search?"
+						/>
+						<button
+							class="searchbox__button"
+							title="Press to search"
+						>
+							❯
+						</button>
+					</div>
+					<div
+						id="profilepanel"
+						class="profile__wrapper-content"
+					>
+						<div>
+							<span>Profile panel</span>
+							<hr />
+						</div>
+						<ol class="profile__wrapper-list">
+							<li><a href="">link 1</a></li>
+							<li><a href="">link 2</a></li>
+							<li><a href="">link 3</a></li>
+							<li><a href="">link 4</a></li>
+							<li><a href="">link 5</a></li>
+							<li>
+								<button
+									class="profile__logoutbtn"
+									title="Logout from your account"
+								>
+									LOGOUT
+								</button>
+							</li>
+						</ol>
+					</div>
+					<div class="icons__wrapper">
+						<div class="progress__wrapper">
+							<svg
+								viewBox="0 0 100 100"
+								preserveAspectRatio="none"
+								data-value="75"
+							>
+								<circle
+									r="45"
+									cx="50"
+									cy="50"
+								/>
+								<path
+									class="meter"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-dashoffset="282.78302001953125"
+									stroke-dasharray="282.78302001953125"
+									d="M5,50a45,45 0 1,0 90,0a45,45 0 1,0 -90,0"
+								/>
+								<text
+									x="50"
+									y="50"
+									font-size="20"
+									text-anchor="middle"
+									dominant-baseline="central"
+								>
+									0/100
+								</text>
+							</svg>
+						</div>
+						<button
+							class="notify__wrapper"
+							title="10 new notifications"
+						>
+							<svg viewBox="0 0 448 512">
+								<path
+									d="M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z"
+								/>
+							</svg>
+							<div class="notify__badge">10</div>
+						</button>
+						<div class="profile__wrapper">
+							<button
+								class="profile__btn-content"
+								title="Open profile panel"
+								onclick="toggle_profilepanel()"
+							>
+								<img
+									src="./assets/user.png"
+									alt="User profile img"
+									class="profile__img"
+								/>
+								<span
+									class="profile__text-content"
+									title="Show the profile panel"
+								>
+									ME<span id="profile-text">▼</span>
+								</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<main></main>
+		<footer></footer>
+		<script
+			type="text/javascript"
+			src="./js/main.js"
+		></script>
+	</body>
+</html>

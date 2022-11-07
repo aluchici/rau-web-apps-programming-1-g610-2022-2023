@@ -487,3 +487,22 @@ main {
 	border: 1px solid blue;
 	padding: 5px;
 }
+
+.clear-button {
+	grid-column-start: 2;
+	grid-row-start: 3;
+}
+
+.test-button {
+	grid-column-start: 4;
+	grid-row-start: 3;
+}
+
+.save-button {
+	grid-column-start: 5;
+	grid-row-start: 3;
+}
+
+.body-sample {
+	
+}

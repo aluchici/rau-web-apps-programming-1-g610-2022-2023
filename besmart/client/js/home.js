@@ -1,4 +1,5 @@
 class Equipment {
+    id;
     name;
     numberOfInputs;
     numberOfOutputs;
@@ -78,6 +79,10 @@ const simulation = new Simulation();
 function addEquipmentsToDropdown(equipments) {
     const equipmentsDropdown = document.getElementById("equipment-select");
     if (equipmentsDropdown) {
+        const option = document.createElement("option");
+        option.value = "Select equipment...";
+        option.innerText ="Select equipment...";
+        equipmentsDropdown.appendChild(option);
         for (const equipment of equipments) {
             const option = document.createElement("option");
             option.value = ""
@@ -87,11 +92,25 @@ function addEquipmentsToDropdown(equipments) {
     }
 }
 
+
+function getSelectedEquipment() {
+    const select = document.getElementById("equipment-select");
+    const equipmentName = select.options[select.selectedIndex].text;
+    for (const equipment of EQUIPMENTS) {
+        if (equipment.name === equipmentName) {
+            simulation.addEquipment(equipment);
+            break;
+        }
+    }
+    select.selectedIndex = 0;
+    console.log(simulation);
+}
+
 function createEquipmentsDropdown(equipments) {
     const select = document.createElement("select");
     select.name = "equipment";
     select.id = "equipment-select";
-    
+    select.onchange = getSelectedEquipment;
     const addEquipmentButton = document.getElementById("add-equipment-button");
     addEquipmentButton.appendChild(select);
 

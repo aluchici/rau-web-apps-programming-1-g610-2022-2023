@@ -1,65 +1,101 @@
-// 1. creez element nou (nod)
-const paragraf = document.createElement("p");
+class Equipment {
+    name;
+    numberOfInputs;
+    numberOfOutputs;
+    requiredCurrent;
+    requiredVoltage;
+    description;
+    connections;
 
-// 2. customizez / modific elementul nou creat 
-paragraf.innerText = "Acesta este un paragraf creat folosind JavaScript.";
-paragraf.style.fontFamily = "Courier";
-paragraf.style.color = "red";
-paragraf.name = "primul-paragraf";
-paragraf.id = "pp1";
-console.log(paragraf);
+    constructor(name, numberOfInputs, numberOfOutputs, requiredCurrent = 0, requiredVoltage = 0, description = '') {
+        this.name = name;
+        this.description = description;
+        this.numberOfInputs = numberOfInputs;
+        this.numberOfOutputs = numberOfOutputs;
+        this.requiredCurrent = requiredCurrent;
+        this.requiredVoltage = requiredVoltage;
+        this.connections = [];
+    }
 
-// 3. inserez elementul in pagina (DOM). 
-// 3.1 identific si extrag parintele din DOM 
-// 3.1.1 extrag dupa id 
-const body = document.getElementById("home-page");
-console.log(body);
-
-// 3.1.2 extrag dupa tag 
-const bodyTag = document.getElementsByTagName("body");
-console.log(bodyTag);
-
-// 3.1.3 extrag dupa nume
-const bodyName = document.getElementsByName("body");
-console.log(bodyName);
-
-// 3.1.4 extrag dupa o proprietate css 
-const bodyCSS = document.getElementsByClassName("body-sample");
-console.log(bodyCSS);
-
-// 3.2 inserez elementul nou in lista copiilor 
-body.appendChild(paragraf);
-
-let element;
-for (const child of body.children) {
-    if (child.tagName === "MAIN") {
-        element = child;
-        break;
+    connectWith(equipment) {
+        this.connections.push(equipment);
     }
 }
-if (element !== undefined) {
-    body.insertBefore(paragraf, element);
+
+class Simulation {
+    constructor() {
+        this.equipments = [];
+    }
+
+    addEquipment(equipment) {
+        this.equipments.push(equipment);
+    }
+
+    removeEquipment(equipment) {
+        const equipmentIndex = this.equipments.indexOf(equipment);
+        this.equipments.splice(equipmentIndex, 1);    
+    }
+
+    test() {
+        // TODO: implement test later
+    }
+
+    connect(equipment1, equipment2) {
+        if (this.checkIfConnectionPossible(equipment1, equipment2)) {
+            const indexOfEquipment1 = this.equipments.indexOf(equipment1);
+            this.equipments[indexOfEquipment1].connectWith(equipment2);
+
+            const indexOfEquipment2 = this.equipments.indexOf(equipment2);
+            this.equipments[indexOfEquipment2].connectWith(equipment1);
+        } else {
+            throw "Unable to connect equipments";
+        }
+    }
+
+    checkIfConnectionPossible(equipment1, equipment2) {
+        if (equipment1.numberOfOutputs > equipment2.numberOfInputs) {
+            return false;
+        }
+        return true;
+    }
 }
 
-// modificare
-// 1. identific si extrag elementul 
-const p = document.getElementById("pp1");
 
-// 2. modific 
-p.style.color = 'blue';
-p.innerText = "Acest paragraf a fost modificat.";
+const EQUIPMENTS = [
+    new Equipment("LED", 2, 1),
+    new Equipment("Battery", 0, 2),
+    new Equipment("Resistor", 1, 1),
+    new Equipment("Capacitor", 1, 1)
+]
 
-// stergere v1
-// 1. identific si extrag elementul
-// const body = document.getElementById("home-page");
-// 2. sterg
-// p.remove();
+const simulation = new Simulation();
+// simulation.addEquipment(EQUIPMENTS[0]);
+// simulation.addEquipment(EQUIPMENTS[1]);
+// simulation.connect(simulation.equipments[1], simulation.equipments[0]);
+// console.log(simulation);
 
-// stergere v2
-// 1. identific si extrag parintele (body)
-// const body = document.getElementById("home-page");
-// 2. sterg copilul din parinte 
-// 2.1. identific si extrag copilul
-// const p = document.getElementById("pp1");
-// 2.2. sterg 
-body.removeChild(p);
+
+function addEquipmentsToDropdown(equipments) {
+    const equipmentsDropdown = document.getElementById("equipment-select");
+    if (equipmentsDropdown) {
+        for (const equipment of equipments) {
+            const option = document.createElement("option");
+            option.value = ""
+            option.innerText = equipment.name;
+            equipmentsDropdown.appendChild(option);
+        }
+    }
+}
+
+function createEquipmentsDropdown(equipments) {
+    const select = document.createElement("select");
+    select.name = "equipment";
+    select.id = "equipment-select";
+    
+    const addEquipmentButton = document.getElementById("add-equipment-button");
+    addEquipmentButton.appendChild(select);
+
+    addEquipmentsToDropdown(equipments);
+}
+
+createEquipmentsDropdown(EQUIPMENTS);

@@ -7,14 +7,18 @@ class Equipment {
     requiredVoltage;
     description;
     connections;
+    pathToImage;
+    xCoord;
+    yCoord;
 
-    constructor(name, numberOfInputs, numberOfOutputs, requiredCurrent = 0, requiredVoltage = 0, description = '') {
+    constructor(name, numberOfInputs, numberOfOutputs, requiredCurrent = 0, requiredVoltage = 0, description = '', pathToImage = '') {
         this.name = name;
         this.description = description;
         this.numberOfInputs = numberOfInputs;
         this.numberOfOutputs = numberOfOutputs;
         this.requiredCurrent = requiredCurrent;
         this.requiredVoltage = requiredVoltage;
+        this.pathToImage = pathToImage;
         this.connections = [];
     }
 
@@ -63,10 +67,10 @@ class Simulation {
 
 
 const EQUIPMENTS = [
-    new Equipment("LED", 2, 1),
-    new Equipment("Battery", 0, 2),
-    new Equipment("Resistor", 1, 1),
-    new Equipment("Capacitor", 1, 1)
+    new Equipment("LED", 2, 1, 0, 0, '', 'D:\\LUCHICI\\Web Apps Programming 1\\Source\\rau-web-apps-programming-1-g610-2022-2023\\besmart\\client\\assets\\simulation\\led.png'),
+    new Equipment("Battery", 0, 2, 0, 0, '', 'D:\\LUCHICI\\Web Apps Programming 1\\Source\\rau-web-apps-programming-1-g610-2022-2023\\besmart\\client\\assets\\simulation\\battery.png'),
+    new Equipment("Resistor", 1, 1, 0, 0, '', 'D:\\LUCHICI\\Web Apps Programming 1\\Source\\rau-web-apps-programming-1-g610-2022-2023\\besmart\\client\\assets\\simulation\\resistor.png'),
+    new Equipment("Capacitor", 1, 1, 0, 0, '', 'D:\\LUCHICI\\Web Apps Programming 1\\Source\\rau-web-apps-programming-1-g610-2022-2023\\besmart\\client\\assets\\simulation\\capacitor.png')
 ]
 
 const simulation = new Simulation();
@@ -99,11 +103,11 @@ function getSelectedEquipment() {
     for (const equipment of EQUIPMENTS) {
         if (equipment.name === equipmentName) {
             simulation.addEquipment(equipment);
+            regenerateSimulationCanvas(simulation);
             break;
         }
     }
     select.selectedIndex = 0;
-    console.log(simulation);
 }
 
 function createEquipmentsDropdown(equipments) {
@@ -118,3 +122,40 @@ function createEquipmentsDropdown(equipments) {
 }
 
 createEquipmentsDropdown(EQUIPMENTS);
+
+// const img = new Image();
+
+function regenerateSimulationCanvas(simulation) {
+    // TODO: make equipments 15px by 15px on canvas
+    const canvas = document.getElementById("viewport");
+    const ctx = canvas.getContext("2d");
+
+    const img = new Image();
+    let x, y;
+    for (const equipment of simulation.equipments) {
+        img.src = equipment.pathToImage;
+        if (equipment.xCoord) {
+            x = equipment.xCoord;
+        } else {
+            x = Math.random() * (50 - 10 + 1) + 10;
+            equipment.xCoord = x;
+        }
+
+        if (equipment.yCoord) {
+            y = equipment.yCoord;
+        } else {
+            y = Math.random() * (50 - 10 + 1) + 10;
+            equipment.yCoord = y;
+        }
+
+        img.onload = drawCurrentImage;
+    }
+
+    function drawCurrentImage() {
+        img.width = "10px";
+        img.height = "10px";
+        ctx.drawImage(img, x, y);
+    }
+}
+
+// TODO: Add method to move one equipment once added to canvas

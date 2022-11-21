@@ -159,3 +159,4 @@ function regenerateSimulationCanvas(simulation) {
 }
 
 // TODO: Add method to move one equipment once added to canvas
+// https://stackoverflow.com/questions/55633974/how-do-you-move-objects-by-dragging-on-the-background-in-html5-canvas

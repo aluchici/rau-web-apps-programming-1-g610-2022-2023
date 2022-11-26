@@ -1,6 +1,6 @@
 /* MAIN STYLE */
 :root {
-	--gray: #9a9898;
+	--gray: #aeaaaa;
 }
 
 * {
@@ -425,21 +425,26 @@ nav {
 }
 
 main {
+	width: 100%;
+	height: 100%;
 	display: grid;
 	min-height: 100vh;
-	grid-template-rows: 0.1fr repeat(2, 1fr);
+	grid-template-rows: 70px 1fr 70px;
 	grid-template-columns: repeat(6, 1fr);
 }
 
 .canvas__wrapper {
-    display: flex;
+	margin: 0.35rem;
+	grid-row-end: 3;
 	grid-row-start: 2;
-	grid-column-start: 2;
-	grid-column-end: 6;
-	border: 1px solid black;
-	background-color: #0606bc;
+	grid-column-end: 7;
 	border-radius: 5px;
+	max-width: 1920px;
+	grid-column-start: 1;
+	align-self: center;
 	flex-direction: column;
+	background-color: whitesmoke;
+	box-shadow: 1px 1px black, -2px -1px 10px rgba(0,0,0,0.5);
 }
 
 .canvas__wrapper canvas {
@@ -466,26 +471,16 @@ main {
     }
 }
 
-.main-grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-	grid-template-rows: 1fr 1fr 1fr;
-	border: 1px solid green;
-	padding: 10px;
-}
-
 .add-equipment-button {
+	padding: 5px;
 	grid-row-start: 1;
 	grid-column-start: 2;
-	border: 1px solid blue;
-	padding: 5px;
 }
 
 .connect-button {
+	padding: 5px;
 	grid-row-start: 1;
 	grid-column-start: 3;
-	border: 1px solid blue;
-	padding: 5px;
 }
 
 .clear-button {

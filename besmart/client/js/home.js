@@ -146,10 +146,10 @@ class Canvas {
 	};
 	spawn = (equipment) => {
 		if (!equipment.xCoord) {
-			equipment.xCoord = 20;
+			equipment.xCoord = Math.floor(Math.random() * 260) + 10;
 		}
 		if (!equipment.yCoord) {
-			equipment.yCoord = 50;
+			equipment.yCoord = Math.floor(Math.random() * 120) + 20;
 		}
 		this.draw();
 		return;

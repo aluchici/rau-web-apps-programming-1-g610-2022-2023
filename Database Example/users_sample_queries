@@ -1,0 +1,35 @@
+-- Get data
+-- SELECT
+select id, name, email from users;
+select * from users;
+
+select email, password from users
+where
+    email = 'a@b.c';
+
+select name, email from users
+where
+    created_at > 10 AND
+    updated_at < 20;
+
+-- Insert data
+-- INSERT
+insert into users (name, email, password, second_password)
+values ('User 1', 'a@b.com', 'dm320-AADfr', 'dm320-AADfr');
+
+insert into users (name, email, password, second_password)
+values ('User 2', 'a@b.c', 'dm320-AADfr', 'dm320-AADfr');
+-- Update data
+-- UPDATE
+update users
+set
+    name = 'User 1 Updated',
+    email = 'a@b.com'
+where
+    email = 'a@b.c';
+
+-- Delete data
+-- DELETE
+delete from users
+where
+    name = 'User 2';

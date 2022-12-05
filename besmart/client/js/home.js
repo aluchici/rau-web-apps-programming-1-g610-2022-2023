@@ -304,7 +304,7 @@ class Canvas {
 			} else {
 				if (this.selectedEquipment.name == eq.name) {
 					this.selectedEquipment.selected = false;
-					this.selectedEquipment == null;
+					this.selectedEquipment = null;
 					this.draw();
 					return;
 				}
@@ -549,7 +549,12 @@ let clearCanvasButton = () => {
 			"Clear the canvas",
 			"Are you sure you want to clear the canvas?"
 		).show(() => {
+			simulation.equipments.forEach(el => {
+				el.connections = [];
+			});
 			simulation.equipments = [];
+			canvas.dragEquipment = null;
+			canvas.selectedEquipment = null;
 			new MessageBox("✓ The canvas have been cleared!").show();
 			canvas.draw();
 			return;

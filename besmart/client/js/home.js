@@ -15,6 +15,7 @@ class Equipment {
 	Image;
 	Box;
 	clicked = false;
+	selected = false;
 
 	constructor(
 		name,
@@ -40,8 +41,41 @@ class Equipment {
 		return;
 	}
 
-	connectWith(equipment) {
-		this.connections.push(equipment);
+	connectedWith(equipment) {
+		if (this.connections.length <= 0) {
+			return false;
+		}
+		let found = false;
+		this.connections.forEach((map) => {
+			if (map.equipment.name === equipment.name) {
+				found = true;
+				return;
+			}
+		});
+		return found;
+	}
+
+	connectWith(equipment, type) {
+		this.connections.push({
+			equipment: equipment,
+			connection_type: type,
+		});
+	}
+
+	disconnectFrom(equipment) {
+		let del_map = {
+			index: 0,
+			found: false,
+		};
+		this.connections.forEach((map, index) => {
+			if (map.equipment.name === equipment.name) {
+				del_map.found = true;
+				del_map.index = index;
+				return;
+			}
+		});
+		if (del_map.found) this.connections.splice(del_map.index, 1);
+		return del_map.found;
 	}
 
 	isMouseInShape = (x, y) => {
@@ -60,18 +94,76 @@ class Equipment {
 		return false;
 	};
 
+	drawConnections(ctx) {
+		function drawArrow(fromx, fromy, tox, toy, arrowWidth, color) {
+			let headlen = 10;
+			let angle = Math.atan2(toy - fromy, tox - fromx);
+			ctx.save();
+			ctx.strokeStyle = color;
+			ctx.beginPath();
+			ctx.moveTo(fromx, fromy);
+			ctx.lineTo(tox, toy);
+			ctx.lineWidth = arrowWidth;
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(tox, toy);
+			ctx.lineTo(
+				tox - headlen * Math.cos(angle - Math.PI / 10),
+				toy - headlen * Math.sin(angle - Math.PI / 10)
+			);
+			ctx.lineTo(
+				tox - headlen * Math.cos(angle + Math.PI / 10),
+				toy - headlen * Math.sin(angle + Math.PI / 10)
+			);
+			ctx.lineTo(tox, toy);
+			ctx.lineTo(
+				tox - headlen * Math.cos(angle - Math.PI / 10),
+				toy - headlen * Math.sin(angle - Math.PI / 10)
+			);
+			ctx.fill();
+			ctx.stroke();
+			ctx.restore();
+			return;
+		}
+		ctx.strokeStyle = "black";
+		this.connections.forEach((map) => {
+			if (map.connection_type == "out") {
+				let el = map.equipment;
+				drawArrow(
+					this.xCoord + this.sizeW,
+					this.yCoord + this.sizeH / 2,
+					el.xCoord,
+					el.yCoord + el.sizeH / 2,
+					1,
+					"black"
+				);
+			}
+			return;
+		});
+	}
+
 	draw(ctx) {
 		ctx.lineWidth = 1;
 		ctx.setLineDash([2]);
-		ctx.strokeStyle = "gray";
-		this.clicked &&
+		if (this.selected) {
+			ctx.strokeStyle = "blue";
 			ctx.strokeRect(
 				this.xCoord - 1,
 				this.yCoord - 1,
 				this.sizeW + 2,
 				this.sizeH + 3
 			);
+		} else if (this.clicked) {
+			ctx.strokeStyle = "gray";
+			ctx.strokeRect(
+				this.xCoord - 1,
+				this.yCoord - 1,
+				this.sizeW + 2,
+				this.sizeH + 3
+			);
+		}
 		ctx.drawImage(this.Image, this.xCoord, this.yCoord, this.sizeW, this.sizeH);
+		this.drawConnections(ctx);
 		return;
 	}
 }
@@ -89,7 +181,9 @@ class Simulation {
 
 	addEquipment(equipment) {
 		if (this.existsEquipment(equipment)) {
-			alert("Equipment already exists on the canvas!");
+			new MessageBox(
+				"✗ Equipment '" + equipment.name + "' already exists on the canvas!"
+			).show("error", 3);
 			return false;
 		}
 		this.equipments.push(equipment);
@@ -101,16 +195,28 @@ class Simulation {
 		this.equipments.splice(equipmentIndex, 1);
 	}
 
+	isConnected(equipment1, equipment2) {
+		return equipment1.connectedWith(equipment2);
+	}
+
+	disconnect(equipment1, equipment2) {
+		let a = equipment1.disconnectFrom(equipment2);
+		let b = equipment2.disconnectFrom(equipment1);
+		if (a && b) {
+			return true;
+		}
+		return false;
+	}
+
 	connect(equipment1, equipment2) {
 		if (this.checkIfConnectionPossible(equipment1, equipment2)) {
 			const indexOfEquipment1 = this.equipments.indexOf(equipment1);
-			this.equipments[indexOfEquipment1].connectWith(equipment2);
-
+			this.equipments[indexOfEquipment1].connectWith(equipment2, "out");
 			const indexOfEquipment2 = this.equipments.indexOf(equipment2);
-			this.equipments[indexOfEquipment2].connectWith(equipment1);
-		} else {
-			throw "Unable to connect equipments";
+			this.equipments[indexOfEquipment2].connectWith(equipment1, "in");
+			return true;
 		}
+		return false;
 	}
 
 	checkIfConnectionPossible(equipment1, equipment2) {
@@ -122,6 +228,7 @@ class Simulation {
 }
 class Canvas {
 	canvas;
+	dragEquipment = null;
 	selectedEquipment = null;
 	constructor(simulation) {
 		this.sim = simulation;
@@ -151,6 +258,9 @@ class Canvas {
 		if (!equipment.yCoord) {
 			equipment.yCoord = Math.floor(Math.random() * 120) + 20;
 		}
+		new MessageBox(
+			"✓ Equipment '" + equipment.name + "' have been spawned on the canvas!"
+		).show("success", 2);
 		this.draw();
 		return;
 	};
@@ -167,30 +277,102 @@ class Canvas {
 	draw = () => {
 		let bounding = this.getCanvasBox();
 		this.ctx.clearRect(0, 0, bounding.width, bounding.height);
+		if (this.selectedEquipment != null) {
+			this.ctx.font = '9px serif';
+			this.ctx.fillText("(!) Double-Click on another equipment to connect/disconnect.", 2, 10);
+		}
 		for (const equipment of this.sim.equipments) {
 			equipment.draw(this.ctx);
 		}
 		return;
 	};
 	addEvents = () => {
+		this.canvas.addEventListener("dblclick", (e) => {
+			const eq = this.equipmentAtLocation(e);
+			///////////////////////////////////////
+			if (eq == null) {
+				return;
+			}
+			if (this.selectedEquipment == null) {
+				eq.selected = true;
+				this.selectedEquipment = eq;
+				new MessageBox(
+					"Equipment '" + this.selectedEquipment.name + "' have been selected."
+				).show("info", 2);
+				this.draw();
+				return;
+			} else {
+				if (this.selectedEquipment.name == eq.name) {
+					this.selectedEquipment.selected = false;
+					this.selectedEquipment == null;
+					this.draw();
+					return;
+				}
+				if (this.sim.isConnected(this.selectedEquipment, eq)) {
+					new ConfirmBox(
+						"Disconnect equipments",
+						"Are you sure you want to disconnect '" +
+							this.selectedEquipment.name +
+							"' from '" +
+							eq.name +
+							"'?"
+					).show((ev) => {
+						if (this.sim.disconnect(this.selectedEquipment, eq)) {
+							new MessageBox("✓ Equipments have been disconnected!").show();
+							this.draw();
+						} else {
+							new MessageBox("✗ Couldn't disconnect the equipments!").show(
+								"error"
+							);
+						}
+					});
+					return;
+				}
+				new ConfirmBox(
+					"Connect equipments",
+					"Are you sure you want to connect '" +
+						this.selectedEquipment.name +
+						"' with '" +
+						eq.name +
+						"'?"
+				).show((ev) => {
+					if (this.sim.connect(this.selectedEquipment, eq)) {
+						new MessageBox("✓ Equipments have been connected!").show();
+						this.draw();
+					} else {
+						new MessageBox("✗ Couldn't connect the equipments!").show("error");
+					}
+				});
+				return;
+			}
+		});
 		this.canvas.addEventListener("mouseleave", () => {
-			if (this.selectedEquipment == null) return;
-			this.selectedEquipment.clicked = false;
-			this.selectedEquipment = null;
+			if (this.dragEquipment == null) return;
+			this.dragEquipment.clicked = false;
+			this.dragEquipment = null;
 			this.draw();
 			return;
 		});
 		this.canvas.addEventListener("mousedown", (e) => {
 			const eq = this.equipmentAtLocation(e);
 			///////////////////////////////////////
-			if (eq == null) return;
+			if (eq == null) {
+				if (this.selectedEquipment != null) {
+					this.selectedEquipment.clicked = false;
+					this.selectedEquipment.selected = false;
+					this.selectedEquipment = null;
+					this.draw();
+					return;
+				}
+				return;
+			}
 			eq.clicked = true;
-			this.selectedEquipment = eq;
+			this.dragEquipment = eq;
 			this.draw();
 			return;
 		});
 		this.canvas.addEventListener("mousemove", (e) => {
-			if (this.selectedEquipment == null) return;
+			if (this.dragEquipment == null) return;
 			let maxX = 285,
 				maxY = 135;
 			const mousePos = this.getMousePos(e);
@@ -203,19 +385,86 @@ class Canvas {
 			if (newY >= maxY) {
 				newY = maxY;
 			}
-			this.selectedEquipment.xCoord = newX;
-			this.selectedEquipment.yCoord = newY;
+			this.dragEquipment.xCoord = newX;
+			this.dragEquipment.yCoord = newY;
 			this.draw();
 			return;
 		});
 		this.canvas.addEventListener("mouseup", (e) => {
-			if (this.selectedEquipment == null) return;
-			this.selectedEquipment.clicked = false;
-			this.selectedEquipment = null;
+			if (this.dragEquipment == null) return;
+			this.dragEquipment.clicked = false;
+			this.dragEquipment = null;
 			this.draw();
 			return;
 		});
 	};
+}
+
+class ConfirmBox {
+	constructor(title, text) {
+		this.text = text;
+		this.title = title;
+		this.no_btn = document.getElementById("confirm-no");
+		this.yes_btn = document.getElementById("confirm-yes");
+		return;
+	}
+	show(onSuccess, onDeny = () => {}) {
+		let response = false;
+		let confirm_box = document.getElementById("confirm__box");
+		let confirm_title = document.getElementById("confirm_title");
+		let confirm_msg = document.getElementById("confirm_message");
+		let confirm_wrapper = document.getElementById("confirm_wrapper");
+		confirm_title.innerText = this.title;
+		confirm_msg.innerText = this.text;
+		confirm_box.classList.add("confirm__show");
+		confirm_wrapper.classList.add("confirm__show-wrapper");
+		let close = () => {
+			confirm_wrapper.classList.remove("confirm__show-wrapper");
+			setTimeout(() => confirm_box.classList.remove("confirm__show"), 600);
+		};
+		this.yes_btn.onclick = (ev) => {
+			onSuccess(ev);
+			close();
+			response = true;
+		};
+		this.no_btn.onclick = () => {
+			onDeny();
+			close();
+			response = false;
+		};
+		return response;
+	}
+}
+
+class MessageBox {
+	constructor(text) {
+		this.text = text;
+		return;
+	}
+	show(type = "success", time = 4) {
+		let info_msg = document.getElementById("info_msg");
+		let info_box = document.getElementById("info__box");
+		switch (type) {
+			case "info":
+				info_msg.style.color = "gray";
+				break;
+			case "success":
+				info_msg.style.color = "green";
+				break;
+			case "error":
+				info_msg.style.color = "red";
+				break;
+			default:
+				info_msg.style.color = "green";
+				break;
+		}
+		info_msg.innerText = this.text;
+		info_box.classList.add("info__show");
+		setTimeout(() => {
+			info_box.classList.remove("info__show");
+		}, time * 1000);
+		return;
+	}
 }
 
 const EQUIPMENTS = [
@@ -292,6 +541,23 @@ function createEquipmentsDropdown(equipments) {
 }
 
 createEquipmentsDropdown(EQUIPMENTS);
+
+let clearCanvasButton = () => {
+	const clearButton = document.getElementById("clear-button");
+	clearButton.onclick = () => {
+		new ConfirmBox(
+			"Clear the canvas",
+			"Are you sure you want to clear the canvas?"
+		).show(() => {
+			simulation.equipments = [];
+			new MessageBox("✓ The canvas have been cleared!").show();
+			canvas.draw();
+			return;
+		});
+	};
+};
+
+clearCanvasButton();
 
 /*function regenerateSimulationCanvas(simulation) {
     // TODO: make equipments 15px by 15px on canvas

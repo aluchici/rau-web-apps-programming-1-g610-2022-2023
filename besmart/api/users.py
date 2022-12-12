@@ -4,7 +4,8 @@ import json
 class User:
     special_characters = ["*", "?", "!", "#", "&", "=", "(", ")", "_", "-"]
 
-    def __init__(self, name=None, email=None, password=None, second_password=None):
+    def __init__(self, id=None, name=None, email=None, password=None, second_password=None):
+        self.id = id
         self.name = name
         self.email = email
         self.password = password
@@ -69,16 +70,31 @@ class User:
 
     @classmethod
     def from_dict(cls, user_dict):
-        obj = cls(user_dict["name"], user_dict["email"], user_dict["password"], user_dict["second_password"])
+        id = user_dict.get("id")
+        name = user_dict.get("name")
+        email = user_dict.get("email")
+        password = user_dict.get("password")
+        second_password = user_dict.get("second_password")
+
+        obj = cls(id=id, name=name, email=email, password=password, second_password=second_password)
         return obj
 
     @classmethod
     def from_list(cls, user):
-        obj = cls(user[0], user[1], user[2], user[4])
-        return obj
+        if user is None or len(user) < 4:
+            raise ValueError("Invalid user details list. At least 4 entries are required.")
+
+        if len(user) == 5:
+            obj = cls(id=user[0], name=user[1], email=user[2], password=user[3], second_password=user[4])
+            return obj
+
+        if len(user) == 4:
+            obj = cls(id=user[0], name=user[1], email=user[2], password=user[3])
+            return obj
 
     def to_dict(self):
         user_dict = {
+            "id": self.id,
             "name": self.name,
             "email": self.email,
             "password": self.password,

@@ -1,5 +1,10 @@
 import sqlite3
 
+from users import User
+
+
+CONNECTION_STRING = "/Users/luchicla/Work/RAU/rau-web-apps-programming-1-g610-2022-2023/besmart/datastore/besmart.db"
+
 
 def create_user(user, database_connection_string):
     # conecteaza-te la baza de date
@@ -24,12 +29,26 @@ def create_user(user, database_connection_string):
     conn.commit()
 
     # inchide conexiunea la baza de date (daca este cazul)
+    cursor.close()
     conn.close()
 
 
-def get_user_email_and_password(user, connection_string):
+def get_user_by_email(user, connection_string):
+    query = f"SELECT id, name, email, password FROM users WHERE email = '{user.email}';"
+
     conn = sqlite3.connect(connection_string)
-    query = f"SELECT email, password FROM users WHERE email = '{user.email}';"
+
     cursor = conn.cursor()
-    results = cursor.execute(query)
-    return list(results)
+
+    try:
+        results = cursor.execute(query).fetchone()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        raise e
+
+    user = User.from_list(results)
+
+    return user

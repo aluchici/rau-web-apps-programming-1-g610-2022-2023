@@ -2,7 +2,7 @@ import sqlite3
 
 from users import User
 
-
+# TODO: Change this string when you run on your machine to match the path to your .db file.
 CONNECTION_STRING = "/Users/luchicla/Work/RAU/rau-web-apps-programming-1-g610-2022-2023/besmart/datastore/besmart.db"
 
 
@@ -52,3 +52,42 @@ def get_user_by_email(user, connection_string):
     user = User.from_list(results)
 
     return user
+
+
+def get_user_by_id(user_id, connection_string):
+    query = f"SELECT id, name, email, password FROM users WHERE id = {user_id};"
+
+    conn = sqlite3.connect(connection_string)
+    cursor = conn.cursor()
+
+    try:
+        results = cursor.execute(query).fetchone()
+        user = User.from_list(results)
+        cursor.close()
+        conn.close()
+        return user
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        raise e
+
+
+def update_user():
+    pass
+
+
+def delete_user(user_id, connection_string):
+    query = f"DELETE FROM users WHERE id = {user_id};"
+
+    conn = sqlite3.connect(connection_string)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(query)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        raise e

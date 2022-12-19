@@ -3,6 +3,7 @@ import json
 
 from flask import Flask, request
 
+from besmart.api.account import get_user_details, delete_user_details
 from besmart.api.register import signup, signin
 from besmart.api.repository import CONNECTION_STRING
 
@@ -58,12 +59,19 @@ def authenticate():
         return error_json, 500
 
 
-# TODO: Finish implementation
-@app.route("/api/v1/users", methods=["GET", "PUT", "DELETE"])
-def users():
+@app.route("/api/v1/account/<user_id>", methods=["GET", "PUT", "DELETE"])
+def account(user_id):
     # if request.method == "GET", get all users
     if request.method == "GET":
-        pass
+        try:
+            user = get_user_details(user_id, CONNECTION_STRING)
+            return user.to_json(), 200
+        except Exception as e:
+            error_message = {
+                "error": f"Something went wrong. Cause: {e}"
+            }
+            error_json = json.dumps(error_message)
+            return error_json, 500
 
     # if request.method == "PUT", edit user details
     if request.method == "PUT":
@@ -71,9 +79,15 @@ def users():
 
     # if request.method == "DELETE", delete user from DB
     if request.method == "DELETE":
-        pass
-
-    return "", 200
+        try:
+            delete_user_details(user_id, CONNECTION_STRING)
+            return "", 200
+        except Exception as e:
+            error_message = {
+                "error": f"Something went wrong. Cause: {e}"
+            }
+            error_json = json.dumps(error_message)
+            return error_json, 500
 
 
 app.run(port=5610, debug=True)

@@ -1,14 +1,16 @@
 # In terminal, run pip install flask if flask is not already installed
+# In terminal, run pip install flask_cors if flask cors is not already installed
 import json
 
 from flask import Flask, request
+from flask_cors import CORS 
 
 from besmart.api.account import get_user_details, delete_user_details
 from besmart.api.register import signup, signin
 from besmart.api.repository import CONNECTION_STRING
 
 app = Flask("besmart-api")
-
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route("/", methods=["GET"])
 def home():
@@ -31,7 +33,7 @@ def register():
     try:
         request_body = request.json
         signup(request_body, CONNECTION_STRING)
-        return "", 204
+        return "{}", 204
     except Exception as e:
         error_message = {
             "error": f"Something went wrong. Cause: {e}"
